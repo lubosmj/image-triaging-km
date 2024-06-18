@@ -1,0 +1,5 @@
+#!/bin/bash -eu
+
+/usr/bin/wait_for_mq.sh
+
+exec python3 /services/image_processor.py --image-queue ${IMAGE_QUEUE} --color-queue ${COLOR_QUEUE} --host ${HOST}

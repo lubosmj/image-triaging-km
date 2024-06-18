@@ -1,0 +1,5 @@
+#!/bin/bash -eu
+
+/usr/bin/wait_for_mq.sh
+
+exec python3 /services/image_reader.py --source-dir ${SOURCE_DIR} --image-queue ${IMAGE_QUEUE} --host ${HOST}

@@ -1,0 +1,56 @@
+services:
+  rabbitmq:
+    image: 'rabbitmq:3.13-management'
+    restart: always
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+
+  reader:
+    build: .
+    restart: always
+    command: image-reader
+    environment:
+      IMAGE_QUEUE: ${IMAGE_QUEUE}
+      SOURCE_DIR: ${SOURCE_DIR}
+      HOST: ${HOST}
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ${HOST_SOURCE_DIR}:${SOURCE_DIR}:ro
+
+  processor:
+    build: .
+    restart: always
+    command: image-processor
+    deploy:
+      mode: replicated
+      replicas: 2
+    environment:
+      IMAGE_QUEUE: ${IMAGE_QUEUE}
+      COLOR_QUEUE: ${COLOR_QUEUE}
+      HOST: ${HOST}
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ${HOST_SOURCE_DIR}:${SOURCE_DIR}:ro
+
+  triager:
+    build: .
+    restart: always
+    command: image-triager
+    deploy:
+      mode: replicated
+      replicas: 2
+    environment:
+      COLOR_QUEUE: ${COLOR_QUEUE}
+      DEST_DIR: ${DEST_DIR}
+      HOST: ${HOST}
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ${HOST_SOURCE_DIR}:/${SOURCE_DIR}:ro
+      - ${HOST_DEST_DIR}:/${DEST_DIR}

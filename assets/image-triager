@@ -1,0 +1,5 @@
+#!/bin/bash -eu
+
+/usr/bin/wait_for_mq.sh
+
+exec python3 /services/image_triager.py --dest-dir ${DEST_DIR} --color-queue ${COLOR_QUEUE} --host ${HOST}
