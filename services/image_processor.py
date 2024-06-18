@@ -11,6 +11,7 @@ from PIL import Image, UnidentifiedImageError
 Image.MAX_IMAGE_PIXELS = None
 
 
+# TODO: reduce the number of arguments so it can be easier to use for unit testing
 def process_image(ch, method, properties, body, color_channel, routing):
     image_path = body.decode()
     try:
@@ -31,6 +32,7 @@ def compute_average_color(image_path):
 def send_color_to_queue(image_path, average_color, color_channel, routing_key):
     print(f"Publishing image '{image_path}' with RGB '{average_color}'...", flush=True)
     message = json.dumps({"image_path": image_path, "color": average_color})
+    # TODO: add the persistent delivery mode
     color_channel.basic_publish(exchange='', routing_key=routing_key, body=message)
 
 
@@ -48,6 +50,7 @@ if __name__ == "__main__":
     image_channel.queue_declare(queue=args.image_queue)
 
     color_channel = connection.channel()
+    # TODO: make the queue durable to node restarting
     color_channel.queue_declare(queue=args.color_queue)
 
     image_channel.basic_qos(prefetch_count=1)

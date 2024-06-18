@@ -20,6 +20,7 @@ RGB_TO_COLOR_MAPPING = {
 DEFAULT_COLOR = "other"
 
 
+# TODO: reduce the number of arguments so it can be easier to use for unit testing
 def triage_images(ch, method, properties, body, dest_dir):
     try:
         data = json.loads(body)
